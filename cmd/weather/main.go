@@ -50,7 +50,7 @@ func Fetch(url string, pointer interface{}) error {
 		return err
 	}
 
-	log.Printf("RAW RESPONSE: %s", buf.String())
+	//log.Printf("RAW RESPONSE: %s", buf.String())
 
 	err = json.NewDecoder(&buf).Decode(pointer)
 	if err != nil {
@@ -60,28 +60,34 @@ func Fetch(url string, pointer interface{}) error {
 	return nil
 }
 
+// Location holds a position and the time the position was acquired
 type Location struct {
-	Timestamp int      `json:"timestamp"`
-	Position  Position `json:"iss_position"`
+	//Timestamp int      `json:"timestamp"`
+	Position Position `json:"iss_position"`
 }
 
+// Position holds longitude and latitude
 type Position struct {
 	Latitude  string `json:"latitude"`
 	Longitude string `json:"longitude"`
 }
 
+// Environment holds values for temp, and humiditiy and a description of the weather
 type Environment struct {
-	MainWeather MainWeather `json:"main"`
-	Weather     Weather     `json:"weather"`
+	WeatherValues WeatherValues `json:"main"`
+	Weather       Weather       `json:"weather"`
 }
 
-type MainWeather struct {
+// WeatherValues holds values for temperature and humidity
+type WeatherValues struct {
 	Temp     float64 `json:"temp"`
 	Humidity int     `json:"humidity"`
 }
 
+// Weather is a slice of weather description
 type Weather []WeatherDescription
 
+// WeatherDescription holds a description of the weather
 type WeatherDescription struct {
 	Description string `json:"description"`
 }
