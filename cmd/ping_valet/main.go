@@ -50,24 +50,27 @@ func Fetch(url string, pointer interface{}) error {
 	return nil
 }
 
+// Astronauts holds the names of people in space and the number of people in space
 type Astronauts struct {
-	Message string `json:"message"`
-	Number  int    `json:"number"`
-	People  People `json:"people"`
+	Number int    `json:"number"`
+	People People `json:"people"`
 }
 
+// People is a slice of person
 type People []Person
 
+// Person holds the name and location of people in space
 type Person struct {
 	Name  string `json:"name"`
 	Craft string `json:"craft"`
 }
 
+// Location holds the position of the space station
 type Location struct {
-	Timestamp int      `json:"timestamp"`
-	Position  Position `json:"iss_position"`
+	Position Position `json:"iss_position"`
 }
 
+// Position holds values for longitude and latitude
 type Position struct {
 	Latitude  string `json:"latitude"`
 	Longitude string `json:"longitude"`

@@ -17,9 +17,11 @@ func main() {
 		log.Fatalf("Error fetching information about cats: %s", err.Error())
 	}
 
-	log.Printf("This is an interesting fact:\n%+v", catFact)
+	log.Printf("This is an interesting fact about cats:\n%v", catFact)
 }
 
+// Fetch takes a string that is the URL and a Pointer (&) to a payload struct or map
+// and fills it with the data from the URL
 func Fetch(url string, pointer interface{}) error {
 	res, err := http.Get(url)
 	if err != nil {
@@ -40,8 +42,10 @@ func Fetch(url string, pointer interface{}) error {
 	return nil
 }
 
-type CatInfo []CatSatatement
+// CatInfo is a slice of CatStatement
+type CatInfo []CatStatement
 
-type CatSatatement struct {
+// CatStatement holds random facts about cats
+type CatStatement struct {
 	Text string `json:"text"`
 }

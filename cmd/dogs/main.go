@@ -20,6 +20,8 @@ func main() {
 	log.Printf("Check out this dog:\n%v", dog)
 }
 
+// Fetch takes a string that is the URL and a Pointer (&) to a payload struct or map
+// and fills it with the data from the URL
 func Fetch(url string, pointer interface{}) error {
 	res, err := http.Get(url)
 	if err != nil {
@@ -36,6 +38,7 @@ func Fetch(url string, pointer interface{}) error {
 	return nil
 }
 
+// Images holds the URL for an imaage of a dog
 type Images struct {
 	// Status  string `json:"status"`
 	Message string `json:"message"`

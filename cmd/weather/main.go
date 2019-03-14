@@ -84,7 +84,7 @@ type WeatherValues struct {
 	Humidity int     `json:"humidity"`
 }
 
-// Weather is a slice of weather description
+// Weather is a slice of WeatherDescription
 type Weather []WeatherDescription
 
 // WeatherDescription holds a description of the weather
