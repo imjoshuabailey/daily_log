@@ -21,3 +21,7 @@ dogs: bin
 
 weather: bin
 	cd cmd/weather && go build -o ../../bin/weather
+
+daily_log: bin
+	cd cmd/daily_log && go build -o ../../bin/daily_log
+
