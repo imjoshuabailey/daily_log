@@ -12,7 +12,12 @@ import (
 
 	"github.com/chromedp/chromedp"
 	"github.com/extrame/xls"
+	"github.com/subosito/gotenv"
 )
+
+func init() {
+	gotenv.Load()
+}
 
 func main() {
 	var err error
@@ -25,7 +30,7 @@ func main() {
 	defer cancel()
 
 	// run task authenticates user
-	err = chromedp.Run(ctx, authenticate(`https://tsdloaner.tsd-inc.com`, `54106`, `jbailey`, `Carwash1`))
+	err = chromedp.Run(ctx, authenticate(`https://tsdloaner.tsd-inc.com`, os.Getenv(`ACCOUNT`), os.Getenv(`USERNAME`), os.Getenv(`PASS`)))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -236,7 +241,7 @@ func processUtilization(path string) (float64, error) {
 	if err != nil {
 		return 0, err
 	}
-	fmt.Println(value)
+	fmt.Println("Current utilization percentage is", value)
 	return value, nil
 }
 
@@ -258,7 +263,7 @@ func processDuration(path string) (float64, error) {
 	if err != nil {
 		return 0, err
 	}
-	fmt.Println(value)
+	fmt.Println("Current average duration is", value)
 	return value, nil
 
 }
@@ -267,13 +272,16 @@ func processFullInventory() {
 	if xlFile, err := xls.Open("/Users/joshbailey/downloads/FullInventory.xls", "utf-8"); err == nil {
 		if sheet1 := xlFile.GetSheet(0); sheet1 != nil {
 			year := sheet1.Row(0).Col(3)
+			var count2017 = 0
 			var count2018 = 0
 			var count2019 = 0
 			var count2020 = 0
 			for i := 0; i <= (int(sheet1.MaxRow)); i++ {
 				row1 := sheet1.Row(i)
 				year = row1.Col(3)
-				if year == "2018" || year == "18" {
+				if year == "2017" || year == "17" {
+					count2017 = count2017 + 1
+				} else if year == "2018" || year == "18" {
 					count2018 = count2018 + 1
 				} else if year == "2019" || year == "19" {
 					count2019 = count2019 + 1
@@ -281,9 +289,12 @@ func processFullInventory() {
 					count2020 = count2020 + 1
 				}
 			}
+			fmt.Println(count2017+count2018+count2019+count2020, "Vehicles in fleet")
+			fmt.Println(count2017, "2017s")
 			fmt.Println(count2018, "2018s")
 			fmt.Println(count2019, "2019s")
 			fmt.Println(count2020, "2020s")
+
 		}
 		os.Remove("/Users/joshbailey/downloads/FullInventory.xls")
 	} else {
