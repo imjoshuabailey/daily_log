@@ -30,7 +30,7 @@ func main() {
 	defer cancel()
 
 	// run task authenticates user
-	err = chromedp.Run(ctx, authenticate(`https://tsdloaner.tsd-inc.com`, os.Getenv(`ACCOUNT`), os.Getenv(`USER`), os.Getenv(`PASS`)))
+	err = chromedp.Run(ctx, authenticate(`https://tsdloaner.tsd-inc.com`, os.Getenv(`ACCOUNT`), os.Getenv(`USERNAME`), os.Getenv(`PASS`)))
 	if err != nil {
 		log.Fatal(err)
 	}
