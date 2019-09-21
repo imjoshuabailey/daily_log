@@ -77,6 +77,7 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// run task to process units available table
 	a, err := processUnitsAvailable("/Users/joshbailey/downloads/UnitsAvailable.xls")
 	if err != nil {
 		log.Fatalf("error getting available units: %v", err)
@@ -84,6 +85,7 @@ func main() {
 	os.Remove("/Users/joshbailey/downloads/UnitsAvailable.xls")
 	var _ = a
 
+	// run task to process contracts open table
 	c, err := processContractsOpen("/Users/joshbailey/downloads/ClosedContractsOpen.xls")
 	if err != nil {
 		log.Fatalf("error getting open contracts: %v", err)
@@ -91,6 +93,7 @@ func main() {
 	os.Remove("/Users/joshbailey/downloads/ClosedContractsOpen.xls")
 	var _ = c
 
+	// run task to process utilization table
 	u, err := processUtilization("/Users/joshbailey/downloads/AdjustedUtilization.csv")
 	if err != nil {
 		log.Fatalf("error getting Utilization: %v", err)
@@ -98,6 +101,7 @@ func main() {
 	os.Remove("/Users/joshbailey/downloads/AdjustedUtilization.csv")
 	var _ = u
 
+	// run task to process advisor duration table
 	d, err := processDuration("/Users/joshbailey/downloads/Service_Advisor_Activity.csv")
 	if err != nil {
 		log.Fatalf("error getting Duration: %v", err)
@@ -105,6 +109,7 @@ func main() {
 	os.Remove("/Users/joshbailey/downloads/Service_Advisor_Activity.csv")
 	var _ = d
 
+	// run task to process full inventory table
 	f, err := processFullInventory("/Users/joshbailey/downloads/FullInventory.xls")
 	if err != nil {
 		log.Fatalf("error getting full inventory: %v", err)
@@ -169,7 +174,7 @@ func exportUnitsOut() chromedp.Tasks {
 	}
 }
 
-//export FullInventory.xls file
+// export FullInventory.xls file
 func exportFullInventory() chromedp.Tasks {
 	return chromedp.Tasks{
 		chromedp.Navigate(`https://tsdloaner.tsd-inc.com/FullInventory.aspx`),
@@ -178,13 +183,14 @@ func exportFullInventory() chromedp.Tasks {
 	}
 }
 
+// wait 10 seconds before moving on
 func idleChrome() chromedp.Tasks {
 	return chromedp.Tasks{
 		chromedp.Sleep(10 * time.Second),
 	}
 }
 
-// count the number of 2019 vehicles in units available file
+// count the number of vehicles units available by year
 func processUnitsAvailable(path string) (int, error) {
 	var count17 = 0
 	var count18 = 0
@@ -194,14 +200,16 @@ func processUnitsAvailable(path string) (int, error) {
 	if xlFile, err := xls.Open(path, "utf-8"); err == nil {
 		if sheet1 := xlFile.GetSheet(0); sheet1 != nil {
 			year := sheet1.Row(0).Col(3)
-			
+
 			for i := 0; i <= (int(sheet1.MaxRow)); i++ {
 				row1 := sheet1.Row(i)
 				year = row1.Col(3)
 				if year == "2017" || year == "17" {
 					count17 = count17 + 1
+					total = total + 1
 				} else if year == "2018" || year == "18" {
 					count18 = count18 + 1
+					total = total + 1
 				} else if year == "2019" || year == "19" {
 					count19 = count19 + 1
 					total = total + 1
@@ -223,13 +231,14 @@ func processUnitsAvailable(path string) (int, error) {
 	return total, nil
 }
 
-func processContractsOpen(path string) (int, error){
+// count the number of vehicles loaned out >3 days and >9 days
+func processContractsOpen(path string) (int, error) {
 	var greaterThanThree = 0
 	var doubleDigit = 0
 	if xlFile, err := xls.Open(path, "utf-8"); err == nil {
 		if sheet1 := xlFile.GetSheet(0); sheet1 != nil {
 			days := sheet1.Row(3).Col(15)
-			
+
 			for i := 0; i <= (int(sheet1.MaxRow)); i++ {
 				row1 := sheet1.Row(i)
 				days = row1.Col(15)
@@ -240,10 +249,10 @@ func processContractsOpen(path string) (int, error){
 							doubleDigit = doubleDigit + 1
 						}
 					}
-				}	
+				}
 			}
 		}
-		
+
 	} else {
 		return 0, err
 	}
@@ -252,6 +261,7 @@ func processContractsOpen(path string) (int, error){
 	return greaterThanThree, nil
 }
 
+// parse vehicle utilization percentage
 func processUtilization(path string) (float64, error) {
 
 	f, err := os.Open(path)
@@ -276,6 +286,7 @@ func processUtilization(path string) (float64, error) {
 	return value, nil
 }
 
+// parse the current loan duration average
 func processDuration(path string) (float64, error) {
 	f, err := os.Open(path)
 	if err != nil {
@@ -299,7 +310,8 @@ func processDuration(path string) (float64, error) {
 
 }
 
-func processFullInventory(path string) (int, error){
+// count total number of vehicles by year
+func processFullInventory(path string) (int, error) {
 	var count2017 = 0
 	var count2018 = 0
 	var count2019 = 0
@@ -308,7 +320,7 @@ func processFullInventory(path string) (int, error){
 	if xlFile, err := xls.Open(path, "utf-8"); err == nil {
 		if sheet1 := xlFile.GetSheet(0); sheet1 != nil {
 			year := sheet1.Row(0).Col(3)
-			
+
 			for i := 0; i <= (int(sheet1.MaxRow)); i++ {
 				row1 := sheet1.Row(i)
 				year = row1.Col(3)
@@ -324,13 +336,13 @@ func processFullInventory(path string) (int, error){
 				} else if year == "2020" || year == "20" {
 					count2020 = count2020 + 1
 					total = total + 1
-				}	
+				}
 			}
 		}
 	} else {
 		return 0, err
 	}
-	
+
 	fmt.Println(total, "Vehicles in fleet")
 	fmt.Println(count2017, "2017s")
 	fmt.Println(count2018, "2018s")
