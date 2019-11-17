@@ -1,0 +1,15 @@
+version: '2.4'
+
+services:
+  postgres:
+    image: postgres
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    volumes:
+     - "postgres-vol:/var/lib/postgresql/data"
+
+volumes:
+  postgres-vol:
+
