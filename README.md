@@ -1,1 +1,1 @@
-# golang_daily_log
+# daily_log
